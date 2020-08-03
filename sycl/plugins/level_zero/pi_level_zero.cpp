@@ -2177,11 +2177,11 @@ pi_result piKernelGetGroupInfo(pi_kernel Kernel, pi_device Device,
   return PI_SUCCESS;
 }
 
-pi_result piKernelGetSubGroupInfo(
-    pi_kernel Kernel, pi_device Device,
-    pi_kernel_sub_group_info ParamName,
-    size_t InputValueSize, const void *InputValue, size_t ParamValueSize,
-    void *ParamValue, size_t *ParamValueSizeRet) {
+pi_result piKernelGetSubGroupInfo(pi_kernel Kernel, pi_device Device,
+                                  pi_kernel_sub_group_info ParamName,
+                                  size_t InputValueSize, const void *InputValue,
+                                  size_t ParamValueSize, void *ParamValue,
+                                  size_t *ParamValueSizeRet) {
 
   ze_kernel_properties_t ZeKernelProperties;
   ZE_CALL(zeKernelGetProperties(Kernel->ZeKernel, &ZeKernelProperties));
@@ -2196,8 +2196,7 @@ pi_result piKernelGetSubGroupInfo(
     ReturnValue(size_t{ZeKernelProperties.requiredNumSubGroups});
   } else if (ParamName == PI_KERNEL_COMPILE_SUB_GROUP_SIZE_INTEL) {
     ReturnValue(size_t{ZeKernelProperties.requiredSubgroupSize});
-  }
-  else {
+  } else {
     die("piKernelGetSubGroupInfo: parameter not implemented");
     return {};
   }
