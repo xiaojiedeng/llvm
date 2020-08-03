@@ -2183,12 +2183,29 @@ pi_result piKernelGetGroupInfo(pi_kernel Kernel, pi_device Device,
 
 pi_result piKernelGetSubGroupInfo(
     pi_kernel Kernel, pi_device Device,
-    pi_kernel_sub_group_info ParamName, // TODO: untie from OpenCL
+    pi_kernel_sub_group_info ParamName,
     size_t InputValueSize, const void *InputValue, size_t ParamValueSize,
     void *ParamValue, size_t *ParamValueSizeRet) {
 
-  die("piKernelGetSubGroupInfo: not implemented");
-  return {};
+  ze_kernel_properties_t ZeKernelProperties;
+  ZE_CALL(zeKernelGetProperties(Kernel->ZeKernel, &ZeKernelProperties));
+
+  ReturnHelper ReturnValue(ParamValueSize, ParamValue, ParamValueSizeRet);
+
+  if (ParamName == PI_KERNEL_MAX_SUB_GROUP_SIZE) {
+    ReturnValue(size_t{ZeKernelProperties.maxSubgroupSize});
+  } else if (ParamName == PI_KERNEL_MAX_NUM_SUB_GROUPS) {
+    ReturnValue(size_t{ZeKernelProperties.maxNumSubgroups});
+  } else if (ParamName == PI_KERNEL_COMPILE_NUM_SUB_GROUPS) {
+    ReturnValue(size_t{ZeKernelProperties.requiredNumSubGroups});
+  } else if (ParamName == PI_KERNEL_COMPILE_SUB_GROUP_SIZE_INTEL) {
+    ReturnValue(size_t{ZeKernelProperties.requiredSubgroupSize});
+  }
+  else {
+    die("piKernelGetSubGroupInfo: parameter not implemented");
+    return {};
+  }
+  return PI_SUCCESS;
 }
 
 pi_result piKernelRetain(pi_kernel Kernel) {
