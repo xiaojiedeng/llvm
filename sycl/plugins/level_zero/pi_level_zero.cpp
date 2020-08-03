@@ -2159,9 +2159,7 @@ pi_result piKernelGetGroupInfo(pi_kernel Kernel, pi_device Device,
     return ReturnValue(WgSize);
   }
   case PI_KERNEL_GROUP_INFO_LOCAL_MEM_SIZE: {
-    // TODO: Assume 0 for now, replace with ze_kernel_properties_t::localMemSize
-    // once released in RT.
-    return ReturnValue(pi_uint32{0});
+    return ReturnValue(pi_uint32{ZeKernelProperties.localMemSize});
   }
   case PI_KERNEL_GROUP_INFO_PREFERRED_WORK_GROUP_SIZE_MULTIPLE: {
     ze_device_properties_t ZeDeviceProperties = {};
@@ -2170,9 +2168,7 @@ pi_result piKernelGetGroupInfo(pi_kernel Kernel, pi_device Device,
     return ReturnValue(size_t{ZeDeviceProperties.physicalEUSimdWidth});
   }
   case PI_KERNEL_GROUP_INFO_PRIVATE_MEM_SIZE:
-    // TODO: Assume 0 for now, replace with
-    // ze_kernel_properties_t::privateMemSize once released in RT.
-    return ReturnValue(pi_uint32{0});
+    return ReturnValue(pi_uint32{ZeKernelProperties.privateMemSize});
   default:
     zePrint("Unknown ParamName in piKernelGetGroupInfo: ParamName=%d(0x%x)\n",
             ParamName, ParamName);
