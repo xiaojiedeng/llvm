@@ -66,6 +66,9 @@ struct _pi_platform {
   // a pretty good fit to keep here.
   ze_driver_handle_t ZeDriver;
 
+  // A L0 context handle is primarily used during creation and management of
+  // resources that may be used by multiple devices.
+  // TODO[1.0]: we should most certainly move this into _pi_context.
   ze_context_handle_t ZeContext;
 
   // Cache versions info from zeDriverGetProperties.

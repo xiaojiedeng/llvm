@@ -501,7 +501,6 @@ pi_result piPlatformsGet(pi_uint32 NumEntries, pi_platform *Platforms,
       *NumPlatforms = 0;
       return PI_SUCCESS;
     }
-
     ze_driver_handle_t ZeDriver;
     assert(ZeDriverCount == 1);
     ZE_CALL(zeDriverGet(&ZeDriverCount, &ZeDriver));
@@ -541,6 +540,12 @@ pi_result piPlatformsGet(pi_uint32 NumEntries, pi_platform *Platforms,
   if (NumPlatforms)
     *NumPlatforms = 1;
 
+  // Create the single L0 context to be used for everything now.
+  // TODO[1.0]: this should probably be moved into PI context.
+  //
+  ze_context_desc_t ContextDesc = {ZE_STRUCTURE_TYPE_CONTEXT_DESC, nullptr, 0};
+  ZE_CALL(zeContextCreate(Platforms[0]->ZeDriver, &ContextDesc,
+                          &Platforms[0]->ZeContext));
   return PI_SUCCESS;
 }
 
