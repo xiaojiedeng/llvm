@@ -825,7 +825,7 @@ public:
     else if (ElementTy->isArrayType())
       VisitArrayElements(ArrayField, ElementTy, handlers...);
     else if (ElementTy->isScalarType())
-      KF_FOR_EACH(handleScalarType, ArrayField, ElementTy);
+      KF_FOR_EACH(handleSimpleType, ArrayField, ElementTy);
   }
 
   template <typename... Handlers>
@@ -941,8 +941,9 @@ public:
       else if (FieldTy->isArrayType()) {
         if (KF_FOR_EACH(handleArrayType, Field, FieldTy))
           VisitArrayElements(Field, FieldTy, handlers...);
-      } else if (FieldTy->isScalarType() || FieldTy->isVectorType())
-        KF_FOR_EACH(handleScalarType, Field, FieldTy);
+      } else if (FieldTy->isScalarType() || FieldTy->isVectorType() ||
+		  FieldTy->isUnionType())
+        KF_FOR_EACH(handleSimpleType, Field, FieldTy);
       else
         KF_FOR_EACH(handleOtherType, Field, FieldTy);
       (void)std::initializer_list<int>{
@@ -1000,7 +1001,7 @@ public:
   virtual bool handleReferenceType(FieldDecl *, QualType) { return true; }
   virtual bool handlePointerType(FieldDecl *, QualType) { return true; }
   virtual bool handleArrayType(FieldDecl *, QualType) { return true; }
-  virtual bool handleScalarType(FieldDecl *, QualType) { return true; }
+  virtual bool handleSimpleType(FieldDecl *, QualType) { return true; }
   // Most handlers shouldn't be handling this, just the field checker.
   virtual bool handleOtherType(FieldDecl *, QualType) { return true; }
 
@@ -1286,7 +1287,7 @@ public:
     return true;
   }
 
-  bool handleScalarType(FieldDecl *FD, QualType FieldTy) final {
+  bool handleSimpleType(FieldDecl *FD, QualType FieldTy) final {
     addParam(FD, FieldTy);
     return true;
   }
@@ -1618,7 +1619,7 @@ public:
     return true;
   }
 
-  bool handleScalarType(FieldDecl *FD, QualType FieldTy) final {
+  bool handleSimpleType(FieldDecl *FD, QualType FieldTy) final {
     if (dyn_cast<ArraySubscriptExpr>(MemberExprBases.back()))
       createExprForScalarElement(FD);
     else
@@ -1825,7 +1826,7 @@ public:
     return true;
   }
 
-  bool handleScalarType(FieldDecl *FD, QualType FieldTy) final {
+  bool handleSimpleType(FieldDecl *FD, QualType FieldTy) final {
     addParam(FD, FieldTy, SYCLIntegrationHeader::kind_std_layout);
     return true;
   }
